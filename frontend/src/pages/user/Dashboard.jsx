@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { BookOpen, Users, Settings, Search, Filter, Clock, Calendar, User, Mail, Phone, MapPin, Edit2, Save } from 'lucide-react';
 
 const Dashboard = () => {
