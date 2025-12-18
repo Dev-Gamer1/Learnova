@@ -1,7 +1,32 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "../../services/api";
 
 export default function Login() {
   const [role, setRole] = useState("student");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    try {
+      const endpoint =
+        role === "admin" ? "/admin/login" : "/users/login";
+
+      const res = await API.post(endpoint, {
+        email,
+        password,
+      });
+
+      // Save JWT token
+      localStorage.setItem("token", res.data.token);
+
+      // Redirect to dashboard
+      navigate("/user/dashboard");
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
+    }
+  };
 
   return (
     <>
@@ -24,7 +49,6 @@ export default function Login() {
           justify-content: center;
         }
 
-        /* BRAND */
         .logo {
           font-size: 32px;
           font-weight: 900;
@@ -37,7 +61,6 @@ export default function Login() {
           box-shadow: 0 20px 50px rgba(147, 51, 234, 0.4);
         }
 
-        /* CARD */
         .card {
           width: 900px;
           max-width: 95%;
@@ -48,7 +71,6 @@ export default function Login() {
           box-shadow: 0 30px 80px rgba(0,0,0,0.15);
         }
 
-        /* LEFT IMAGE PANEL */
         .left {
           width: 45%;
           background-image:
@@ -77,7 +99,6 @@ export default function Login() {
           margin-bottom: 22px;
         }
 
-        /* ROLE TOGGLE */
         .toggle {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -104,7 +125,6 @@ export default function Login() {
           box-shadow: 0 10px 30px rgba(37,99,235,0.4);
         }
 
-        /* INPUTS */
         input {
           width: 100%;
           padding: 14px;
@@ -119,7 +139,6 @@ export default function Login() {
           border-color: #9333ea;
         }
 
-        /* BUTTON */
         .signin {
           width: 100%;
           padding: 14px;
@@ -132,7 +151,6 @@ export default function Login() {
           background: linear-gradient(135deg, #2563eb, #9333ea, #ec4899);
         }
 
-        /* LINKS */
         .links {
           display: flex;
           justify-content: space-between;
@@ -186,14 +204,27 @@ export default function Login() {
               </button>
             </div>
 
-            <input type="email" placeholder="Email address" />
-            <input type="password" placeholder="Password" />
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-            <button className="signin">Sign In</button>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button className="signin" onClick={handleLogin}>
+              Sign In
+            </button>
 
             <div className="links">
-              {role === "student" && <a href="#">Create account</a>}
-              <a href="#">Forgot password?</a>
+              {role === "student" && <a href="/register">Create account</a>}
+              <a href="/forgot-password">Forgot password?</a>
             </div>
           </div>
         </div>

@@ -1,49 +1,51 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const cors = require('cors');
 
-require('dotenv').config();
+dotenv.config();
+
+const connectDB = require('./config/db.config');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// --------------------
 // Middleware
+// --------------------
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 app.use(express.json());
 
+// --------------------
+// Connect MongoDB
+// --------------------
+connectDB();
 
+// --------------------
 // Routes
+// --------------------
 const userRoutes = require('./routes/userRoutes');
-app.use('/api/users', userRoutes);
-
-// MongoDB Connection (UPDATED – NO DEPRECATED OPTIONS)
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('MongoDB Connected');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err.message);
-  });
-
-// Test route
-app.get('/', (req, res) => {
-  res.send('Server is Connected & running');
-});
-
-// Insert Real Courses
+const adminRoutes = require('./routes/adminRoutes');
 const courseRoutes = require('./routes/courseRoutes');
-app.use('/api/courses', courseRoutes);
-
-//Enrollment
 const enrollRoutes = require('./routes/enrollRoutes');
+
+app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/courses', courseRoutes);
 app.use('/api/enroll', enrollRoutes);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// --------------------
+// Health Check
+// --------------------
+app.get('/', (req, res) => {
+  res.status(200).send('🚀 Learnova API is running');
 });
-app.use('/api/users', userRoutes);
 
-// Admin Authentication
-const adminRoutes = require('./routes/adminRoutes');
-app.use('/api/admin', adminRoutes);
-
+// --------------------
+// Start Server
+// --------------------
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
