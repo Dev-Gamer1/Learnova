@@ -19,8 +19,8 @@ const courseSchema = new mongoose.Schema(
       default: 'Free',
     },
     youtubeLink: {
-      type: String,
-      required: true,
+      type: String
+      
     },
     thumbnail: {
       type: String,
